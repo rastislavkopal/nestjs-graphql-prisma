@@ -1,0 +1,50 @@
+query MyMessagesConnection {
+  myMessages(first: 20, receiverId: "clldue4cf0002x03cpnfqdkia") {
+    totalCount
+    edges {
+      cursor
+      node {
+        ...MessageData
+        receiver {
+          ...UserData
+        }
+        sender {
+          ...UserData
+        }
+      }
+    }
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+
+mutation CreateMessage {
+  createMessage(
+    data: { text: "Hello message", receiverId: "clldue4bx0000x03c73vd4gs5" }
+  ) {
+    ...MessageData
+  }
+}
+
+subscription SubscriptionMessage {
+  messageCreated {
+    ...MessageData
+  }
+}
+
+fragment MessageData on Message {
+  id
+  text
+}
+
+fragment UserData on User {
+  id
+  email
+  firstname
+  lastname
+  role
+}

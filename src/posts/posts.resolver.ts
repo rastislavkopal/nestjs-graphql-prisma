@@ -10,7 +10,7 @@ import {
 } from '@nestjs/graphql';
 import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection';
 import { PubSub } from 'graphql-subscriptions';
-import { UseGuards } from '@nestjs/common';
+import { Inject, UseGuards } from '@nestjs/common';
 import { PaginationArgs } from '../common/pagination/pagination.args';
 import { LoggedUser } from '../common/decorators/logged-user.decorator';
 import { User } from '../users/models/user.model';
@@ -21,16 +21,18 @@ import { Post } from './models/post.model';
 import { PostConnection } from './models/post-connection.model';
 import { PostOrder } from './dto/post-order.input';
 import { CreatePostInput } from './dto/createPost.input';
-
-const pubSub = new PubSub();
+import { PUB_SUB } from '../common/pubsub/pubsub.const';
 
 @Resolver(() => Post)
 export class PostsResolver {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject(PUB_SUB) private pubSub: PubSub,
+  ) {}
 
   @Subscription(() => Post)
   postCreated() {
-    return pubSub.asyncIterator('postCreated');
+    return this.pubSub.asyncIterator('postCreated');
   }
 
   @UseGuards(GqlAuthGuard)
@@ -47,7 +49,7 @@ export class PostsResolver {
         authorId: user.id,
       },
     });
-    pubSub.publish('postCreated', { postCreated: newPost });
+    this.pubSub.publish('postCreated', { postCreated: newPost });
     return newPost;
   }
 
@@ -62,7 +64,7 @@ export class PostsResolver {
       nullable: true,
     })
     orderBy: PostOrder,
-  ) {
+  ): Promise<PostConnection> {
     const a = await findManyCursorConnection(
       (args) =>
         this.prisma.post.findMany({

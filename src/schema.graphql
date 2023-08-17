@@ -16,6 +16,11 @@ input ChangePasswordInput {
   oldPassword: String!
 }
 
+input CreateMessageInput {
+  receiverId: String!
+  text: String!
+}
+
 input CreatePostInput {
   content: String!
   title: String!
@@ -36,11 +41,36 @@ input LoginInput {
   password: String!
 }
 
+type Message {
+  """Identifies the date and time when the object was created."""
+  createdAt: DateTime!
+  id: ID!
+  receiver: User!
+  sender: User!
+  text: String!
+
+  """Identifies the date and time when the object was last updated."""
+  updatedAt: DateTime!
+}
+
+type MessageConnection {
+  edges: [MessageEdge!]
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type MessageEdge {
+  cursor: String!
+  node: Message!
+}
+
 type Mutation {
   changePassword(data: ChangePasswordInput!): User!
+  createMessage(data: CreateMessageInput!): Message!
   createPost(data: CreatePostInput!): Post!
   login(data: LoginInput!): Auth!
   refreshToken(token: JWT!): Token!
+  removeMessage(id: Int!): Message!
   signup(data: SignupInput!): Auth!
   updateUser(data: UpdateUserInput!): User!
 }
@@ -104,6 +134,7 @@ type Query {
   hello(name: String!): String!
   helloWorld: String!
   me: User!
+  myMessages(after: String, before: String, first: Int, last: Int, receiverId: String, skip: Int): MessageConnection!
   post(postId: String!): Post!
   publishedPosts(after: String, before: String, first: Int, last: Int, orderBy: PostOrder, query: String, skip: Int): PostConnection!
   userPosts(userId: String!): [Post!]!
@@ -123,6 +154,7 @@ input SignupInput {
 }
 
 type Subscription {
+  messageCreated: Message!
   postCreated: Post!
 }
 
