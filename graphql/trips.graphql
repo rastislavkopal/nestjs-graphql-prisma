@@ -1,0 +1,84 @@
+mutation CreateTrip {
+  createTrip(
+    data: {
+      destination: "Lanzarote"
+      startDate: "2007-12-03"
+      endDate: "2007-12-03"
+      cost: 100
+      maxParticipants: 10
+      itinerary: "Hello this is the best trip ever"
+    }
+  ) {
+    ...TripData
+  }
+}
+
+mutation UpdateTrip {
+  updateTrip(
+    id: "ck8j1q2jw0000bq5v4q1q2jw0"
+    data: {
+      destination: "Portugal"
+      startDate: "2007-12-03"
+      endDate: "2007-12-03"
+      cost: 99
+      maxParticipants: 12
+      itinerary: "Hello this is the updated, but still best trip ever"
+    }
+  ) {
+    ...TripData
+  }
+}
+
+query TripsConnection {
+  trips(first: 20, orderBy: { field: cost, direction: desc }) {
+    totalCount
+    edges {
+      cursor
+      node {
+        ...TripData
+      }
+    }
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+
+query Trip {
+  trip(id: "ck8j1q2jw0000bq5v4q1q2jw0") {
+    ...TripData
+  }
+}
+
+mutation DeleteTrip {
+  deleteTrip(id: "ck8j1q2jw0000bq5v4q1q2jw0") {
+    ...TripData
+  }
+}
+
+fragment TripData on Trip {
+  id
+  createdAt
+  updatedAt
+  organizer {
+    ...UserData
+  }
+  destination
+  startDate
+  endDate
+  cost
+  maxParticipants
+  currentParticipants
+  itinerary
+}
+
+fragment UserData on User {
+  id
+  email
+  firstname
+  lastname
+  role
+}

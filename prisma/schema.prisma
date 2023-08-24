@@ -24,6 +24,8 @@ model User {
   role             Role
   sentMessages     Message[] @relation("SentMessages")
   receivedMessages Message[] @relation("ReceivedMessages")
+  trips            Trip[]
+  bookings         Booking[]
 }
 
 model Post {
@@ -40,6 +42,8 @@ model Post {
 enum Role {
   ADMIN
   USER
+  ORGANIZER
+  GUIDE
 }
 
 model Message {
@@ -51,4 +55,33 @@ model Message {
   receiverId String
   sender     User     @relation(name: "SentMessages", fields: [senderId], references: [id])
   receiver   User     @relation(name: "ReceivedMessages", fields: [receiverId], references: [id])
+}
+
+model Trip {
+  id                  String   @id @default(cuid())
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  organizerId         String
+  organizer           User     @relation(fields: [organizerId], references: [id])
+  destination         String
+  startDate           DateTime
+  endDate             DateTime
+  cost                Float
+  maxParticipants     Int
+  currentParticipants Int
+  itinerary           String
+
+  bookings Booking[]
+}
+
+model Booking {
+  id     String   @id @default(cuid())
+  userId String
+  tripId String
+  date   DateTime @default(now()) @map("date")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@map("bookings")
 }

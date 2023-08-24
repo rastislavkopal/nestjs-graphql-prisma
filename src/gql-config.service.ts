@@ -11,34 +11,21 @@ export class GqlConfigService implements GqlOptionsFactory {
   createGqlOptions(): ApolloDriverConfig {
     const graphqlConfig = this.configService.get<GraphqlConfig>('graphql');
     return {
-      // schema options
       autoSchemaFile: graphqlConfig.schemaDestination || './src/schema.graphql',
       sortSchema: graphqlConfig.sortSchema,
       buildSchemaOptions: {
         numberScalarMode: 'integer',
       },
-      // subscription
       installSubscriptionHandlers: true,
       includeStacktraceInErrorResponses: graphqlConfig.debug,
       playground: graphqlConfig.playgroundEnabled,
       subscriptions: {
-        'subscriptions-transport-ws': {
-          path: '/graphql',
-          onConnect: (connectionParams) => {
-            return {
-              req: {
-                headers: {
-                  authorization:
-                    connectionParams.Authorization ??
-                    connectionParams.authorization,
-                },
-              },
-            };
-          },
-        },
+        'graphql-ws': true,
       },
-      context: ({ req, connection }) =>
-        connection ? { req: connection.context } : { req },
+      context: ({ req, res, connection }) =>
+        connection
+          ? { req: { ...req, ...connection.context }, res }
+          : { req, res },
     };
   }
 }

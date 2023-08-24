@@ -19,13 +19,13 @@ import { PaginationArgs } from '../common/pagination/pagination.args';
 import { MessageConnection } from './models/message-connection.model';
 
 @Resolver(() => Message)
-@UseGuards(GqlAuthGuard)
 export class MessagesResolver {
   constructor(
     private readonly messagesService: MessagesService,
     @Inject(PUB_SUB) private pubSub: PubSub,
   ) {}
 
+  @UseGuards(GqlAuthGuard)
   @Mutation(() => Message)
   createMessage(
     @LoggedUser() user: User,
