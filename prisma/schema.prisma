@@ -75,13 +75,13 @@ model Trip {
 }
 
 model Booking {
-  id     String   @id @default(cuid())
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  isApproved Boolean  @default(false)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
+  trip   Trip   @relation(fields: [tripId], references: [id], onDelete: Cascade)
   tripId String
-  date   DateTime @default(now()) @map("date")
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
-
-  @@map("bookings")
 }

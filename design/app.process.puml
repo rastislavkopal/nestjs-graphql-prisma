@@ -1,0 +1,41 @@
+@startuml App
+
+package "Organizer Role" {
+  class Organizer {
+    +ResearchFlight()
+    +ResearchCarRental()
+    +ResearchSurfing()
+    +CalculateTotalCost()
+    +SpecifyParticipants()
+    +SplitCost()
+    +CreateItinerary()
+  }
+
+  class Trip {
+    +Destination
+    +StartDate
+    +EndDate
+    +TotalCost
+    +Itinerary
+  }
+
+  Organizer --> Trip: Creates/Updates
+}
+
+package "User Role" {
+  class User {
+    +SearchTrips()
+    +BookTrip()
+  }
+
+  class Booking {
+    +UserID
+    +TripID
+    +BookingDate
+  }
+
+  User --> Booking: Makes
+  Booking --> Trip: References
+}
+
+@enduml

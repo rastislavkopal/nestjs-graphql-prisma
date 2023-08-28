@@ -13,6 +13,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { GqlConfigService } from './gql-config.service';
 import { MessagesModule } from './messages/messages.module';
 import { TripsModule } from './trips/trips.module';
+import { BookingsModule } from './bookings/bookings.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { TripsModule } from './trips/trips.module';
     PostsModule,
     MessagesModule,
     TripsModule,
+    BookingsModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

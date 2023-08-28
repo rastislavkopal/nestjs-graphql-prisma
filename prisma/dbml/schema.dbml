@@ -15,7 +15,7 @@ Table User {
   sentMessages Message [not null]
   receivedMessages Message [not null]
   trips Trip [not null]
-  bookings bookings [not null]
+  bookings Booking [not null]
 }
 
 Table Post {
@@ -53,16 +53,18 @@ Table Trip {
   maxParticipants Int [not null]
   currentParticipants Int [not null]
   itinerary String [not null]
-  bookings bookings [not null]
+  bookings Booking [not null]
 }
 
-Table bookings {
+Table Booking {
   id String [pk]
-  userId String [not null]
-  tripId String [not null]
-  date DateTime [default: `now()`, not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  isApproved Boolean [not null, default: false]
   user User [not null]
+  userId String [not null]
   trip Trip [not null]
+  tripId String [not null]
 }
 
 Enum Role {
@@ -80,6 +82,6 @@ Ref: Message.receiverId > User.id
 
 Ref: Trip.organizerId > User.id
 
-Ref: bookings.userId > User.id [delete: Cascade]
+Ref: Booking.userId > User.id [delete: Cascade]
 
-Ref: bookings.tripId > Trip.id [delete: Cascade]
+Ref: Booking.tripId > Trip.id [delete: Cascade]

@@ -11,9 +11,48 @@ type Auth {
   user: User!
 }
 
+type Booking {
+  """Identifies the date and time when the object was created."""
+  createdAt: DateTime!
+  id: ID!
+  trip: Trip!
+
+  """Identifies the date and time when the object was last updated."""
+  updatedAt: DateTime!
+  user: User!
+}
+
+type BookingConnection {
+  edges: [BookingEdge!]
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type BookingEdge {
+  cursor: String!
+  node: Booking!
+}
+
+input BookingOrder {
+  direction: OrderDirection!
+  field: BookingOrderField!
+}
+
+"""Properties by which Booking connections can be ordered."""
+enum BookingOrderField {
+  createdAt
+  id
+  updatedAt
+  userId
+}
+
 input ChangePasswordInput {
   newPassword: String!
   oldPassword: String!
+}
+
+input CreateBookingInput {
+  tripId: String!
 }
 
 input CreateMessageInput {
@@ -80,14 +119,17 @@ type MessageEdge {
 
 type Mutation {
   changePassword(data: ChangePasswordInput!): User!
+  createBooking(data: CreateBookingInput!): Booking!
   createMessage(data: CreateMessageInput!): Message!
   createPost(data: CreatePostInput!): Post!
   createTrip(data: CreateTripInput!): Trip!
   deleteTrip(id: String!): Trip
   login(data: LoginInput!): Auth!
   refreshToken(token: JWT!): Token!
+  removeBooking(id: String!): Booking!
   removeMessage(id: Int!): Message!
   signup(data: SignupInput!): Auth!
+  updateBooking(data: UpdateBookingInput!, id: String!): Booking!
   updateTrip(data: UpdateTripInput!, id: String!): Trip
   updateUser(data: UpdateUserInput!): User!
 }
@@ -148,6 +190,8 @@ enum PostOrderField {
 }
 
 type Query {
+  booking(id: String!): Booking
+  bookings(after: String, before: String, first: Int, last: Int, orderBy: BookingOrder!, skip: Int, tripId: String): BookingConnection!
   hello(name: String!): String!
   helloWorld: String!
   me: User!
@@ -231,6 +275,11 @@ enum TripOrderField {
   maxParticipants
   startDate
   updatedAt
+}
+
+input UpdateBookingInput {
+  isApproved: Boolean!
+  tripId: String
 }
 
 input UpdateTripInput {

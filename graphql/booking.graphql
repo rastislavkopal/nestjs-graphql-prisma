@@ -1,0 +1,82 @@
+mutation CreateBooking {
+  createBooking(data: { tripId: "ck8j1q2jw0000bq5v4q1q2jw0" }) {
+    ...BookingData
+  }
+}
+
+mutation UpdateBooking {
+  updateBooking(id: "ck8j1q2jw0000bq5v4q1q2jw0", data: { isApproved: true }) {
+    ...BookingData
+  }
+}
+
+query BookingConnection {
+  bookings(
+    # if tripId is not provided, it will return all bookings for logged in user
+    tripId: "ck8j1q2jw0000bq5v4q1q2jw0"
+    first: 20
+    orderBy: { field: createdAt, direction: desc }
+  ) {
+    totalCount
+    edges {
+      cursor
+      node {
+        ...BookingData
+      }
+    }
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+
+query Booking {
+  booking(id: "ck8j1q2jw0000bq5v4q1q2jw0") {
+    ...BookingData
+  }
+}
+
+mutation DeleteBooking {
+  removeBooking(id: "ck8j1q2jw0000bq5v4q1q2jw0") {
+    ...BookingData
+  }
+}
+
+fragment BookingData on Booking {
+  id
+  createdAt
+  updatedAt
+  user {
+    ...UserData
+  }
+  trip {
+    ...TripData
+  }
+}
+
+fragment TripData on Trip {
+  id
+  createdAt
+  updatedAt
+  organizer {
+    ...UserData
+  }
+  destination
+  startDate
+  endDate
+  cost
+  maxParticipants
+  currentParticipants
+  itinerary
+}
+
+fragment UserData on User {
+  id
+  email
+  firstname
+  lastname
+  role
+}

@@ -21,11 +21,35 @@ export class GqlConfigService implements GqlOptionsFactory {
       playground: graphqlConfig.playgroundEnabled,
       subscriptions: {
         'graphql-ws': true,
+        'subscriptions-transport-ws': true,
       },
-      context: ({ req, res, connection }) =>
-        connection
-          ? { req: { ...req, ...connection.context }, res }
-          : { req, res },
+      context: this.createContext(),
+    };
+  }
+
+  createContext() {
+    return (context) => {
+      if (context?.extra?.request) {
+        const authorization =
+          context?.connectionParams?.Authorization ||
+          context?.connectionParams?.authorization;
+
+        return this.createRequestObject(context, authorization);
+      }
+      return { req: context?.req, res: context?.res };
+    };
+  }
+
+  createRequestObject(context, authorization: string) {
+    return {
+      req: {
+        ...context?.extra?.request,
+        headers: {
+          ...context?.extra?.request?.headers,
+          ...context?.connectionParams,
+          authorization: authorization, // force authorization header lowercase
+        },
+      },
     };
   }
 }
