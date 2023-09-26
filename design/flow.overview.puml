@@ -1,0 +1,71 @@
+@startuml App flow
+|admin| Admin
+|#palegreen|organizer| Organizer
+|#gold|participant| Participant
+|organizer|
+start
+
+if (User it not yet organizer) then
+  :Request to become organizer;
+  |admin|
+  :Approve request;
+  |organizer|
+  :Become organizer;
+endif
+
+group Create event 
+    :Create event;
+    floating note right
+        - dates
+        - location
+        - title
+        - description
+        - price (whats included)
+        - whats not included
+        - images
+        - max participants
+        - min participants
+        - required skills
+        - required equipment
+        - images
+        - payment detail
+    end note
+    :Publish event;
+end group
+
+|participant|
+:Message organizer with questions;
+|organizer|
+:Answer questions;
+
+|participant|
+:**request join trip**\n- with short introduction;
+
+|organizer|
+:Approve request;
+
+|participant|
+:Pay deposit;
+
+|organizer|
+:Confirm payment;
+:Participant is added to trip and group chat;
+:Send reminders or updates;
+
+group After trip
+    |participant|
+    :Leave review;
+    |organizer|
+    :Leave review;
+end group
+
+stop
+@enduml
+
+' TODO 
+' - Cancellation
+' Updates on the Event
+' Reminders
+' Waitlist
+' Emergency Contact & Health Information:
+' Itinerary Updates:

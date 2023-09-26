@@ -26,6 +26,8 @@ model User {
   receivedMessages Message[] @relation("ReceivedMessages")
   trips            Trip[]
   bookings         Booking[]
+  sentReview       Review[]  @relation("SentReviews")
+  receiverReview   Review[]  @relation("ReceivedReviews")
 }
 
 model Post {
@@ -70,18 +72,47 @@ model Trip {
   maxParticipants     Int
   currentParticipants Int
   itinerary           String
+  title               String
+  isPublished         Boolean  @default(false)
 
   bookings Booking[]
+  Review   Review[]
+}
+
+enum BookingStatus {
+  OPEN
+  ACCEPTED
+  REJECTED
+  CANCELLED
 }
 
 model Booking {
-  id         String   @id @default(cuid())
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  isApproved Boolean  @default(false)
+  id        String        @id @default(cuid())
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  status    BookingStatus @default(OPEN)
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
   trip   Trip   @relation(fields: [tripId], references: [id], onDelete: Cascade)
   tripId String
+
+  // @@unique([userId, tripId]) // TODO
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  rating    Int
+  message   String
+
+  author      User    @relation(name: "SentReviews", fields: [authorId], references: [id], onDelete: Cascade)
+  authorId    String
+  organizer   User?   @relation(name: "ReceivedReviews", fields: [organizerId], references: [id], onDelete: Cascade)
+  organizerId String?
+  trip        Trip?   @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  tripId      String?
+  // @@unique([authorId, organizerId]) // TODO how? 
+  // @@unique([authorId, tripId])
 }

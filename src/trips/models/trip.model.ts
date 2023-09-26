@@ -28,4 +28,10 @@ export class Trip extends BaseModel {
 
   @Field(() => String)
   itinerary: string;
+
+  @Field(() => String)
+  title: string;
+
+  @Field(() => Boolean)
+  isPublished: boolean;
 }

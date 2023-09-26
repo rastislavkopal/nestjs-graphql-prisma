@@ -39,4 +39,10 @@ export class CreateTripInput {
   @MinLength(10)
   @MaxLength(32000)
   itinerary: string;
+
+  @Field(() => String)
+  @IsNotEmpty()
+  @MinLength(2)
+  @MaxLength(512)
+  title: string;
 }

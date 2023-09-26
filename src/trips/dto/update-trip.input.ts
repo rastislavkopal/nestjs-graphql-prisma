@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsDate,
   IsNotEmpty,
   IsNumber,
@@ -40,4 +41,8 @@ export class UpdateTripInput extends PartialType(CreateTripInput) {
   @MinLength(10)
   @MaxLength(32000)
   itinerary: string;
+
+  @Field(() => Boolean)
+  @IsBoolean()
+  isPublished: boolean;
 }

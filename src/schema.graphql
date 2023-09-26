@@ -65,6 +65,13 @@ input CreatePostInput {
   title: String!
 }
 
+input CreateReviewInput {
+  message: String!
+  organizerId: String
+  rating: Int!
+  tripId: String
+}
+
 input CreateTripInput {
   cost: Float!
   destination: String!
@@ -72,6 +79,7 @@ input CreateTripInput {
   itinerary: String!
   maxParticipants: Int!
   startDate: Date!
+  title: String!
 }
 
 """
@@ -118,18 +126,22 @@ type MessageEdge {
 }
 
 type Mutation {
+  acceptBooking(id: String!): Booking!
   changePassword(data: ChangePasswordInput!): User!
   createBooking(data: CreateBookingInput!): Booking!
   createMessage(data: CreateMessageInput!): Message!
   createPost(data: CreatePostInput!): Post!
+  createReview(data: CreateReviewInput!): Review!
   createTrip(data: CreateTripInput!): Trip!
   deleteTrip(id: String!): Trip
   login(data: LoginInput!): Auth!
   refreshToken(token: JWT!): Token!
   removeBooking(id: String!): Booking!
   removeMessage(id: Int!): Message!
+  removeReview(id: String!): Review!
   signup(data: SignupInput!): Auth!
   updateBooking(data: UpdateBookingInput!, id: String!): Booking!
+  updateReview(data: UpdateReviewInput!): Review!
   updateTrip(data: UpdateTripInput!, id: String!): Trip
   updateUser(data: UpdateUserInput!): User!
 }
@@ -191,16 +203,45 @@ enum PostOrderField {
 
 type Query {
   booking(id: String!): Booking
-  bookings(after: String, before: String, first: Int, last: Int, orderBy: BookingOrder!, skip: Int, tripId: String): BookingConnection!
+  bookings(after: String, before: String, first: Int, last: Int, orderBy: BookingOrder!, skip: Int, tripId: String!): BookingConnection!
   hello(name: String!): String!
   helloWorld: String!
   me: User!
+  myBookings(after: String, before: String, first: Int, last: Int, orderBy: BookingOrder!, skip: Int): BookingConnection!
   myMessages(after: String, before: String, first: Int, last: Int, receiverId: String, skip: Int): MessageConnection!
   post(postId: String!): Post!
   publishedPosts(after: String, before: String, first: Int, last: Int, orderBy: PostOrder, query: String, skip: Int): PostConnection!
+  review(id: String!): Review!
+  reviews(after: String, before: String, first: Int, last: Int, organizerId: String, skip: Int, tripId: String): ReviewConnection!
   trip(id: String!): Trip
   trips(after: String, before: String, first: Int, last: Int, orderBy: TripOrder!, query: String, skip: Int): TripConnection!
   userPosts(userId: String!): [Post!]!
+}
+
+type Review {
+  author: User!
+
+  """Identifies the date and time when the object was created."""
+  createdAt: DateTime!
+  id: ID!
+  message: String!
+  organizer: User
+  rating: Int!
+  trip: Trip
+
+  """Identifies the date and time when the object was last updated."""
+  updatedAt: DateTime!
+}
+
+type ReviewConnection {
+  edges: [ReviewEdge!]
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type ReviewEdge {
+  cursor: String!
+  node: Review!
 }
 
 """User role"""
@@ -240,10 +281,12 @@ type Trip {
   destination: String!
   endDate: Date!
   id: ID!
+  isPublished: Boolean!
   itinerary: String!
   maxParticipants: Int!
   organizer: User!
   startDate: Date!
+  title: String!
 
   """Identifies the date and time when the object was last updated."""
   updatedAt: DateTime!
@@ -282,13 +325,23 @@ input UpdateBookingInput {
   tripId: String
 }
 
+input UpdateReviewInput {
+  id: String!
+  message: String
+  organizerId: String
+  rating: Int
+  tripId: String
+}
+
 input UpdateTripInput {
   cost: Float!
   destination: String!
   endDate: Date!
+  isPublished: Boolean!
   itinerary: String!
   maxParticipants: Int!
   startDate: Date!
+  title: String
 }
 
 input UpdateUserInput {

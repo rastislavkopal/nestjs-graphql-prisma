@@ -1,0 +1,77 @@
+mutation CreateReview {
+  createReview(
+    data: { rating: 4, message: "adasda", tripId: "ck8j1q2jw0000bq5v4q1q2jw0" }
+  ) {
+    ...ReviewData
+  }
+}
+
+query ReviewConnection {
+  # tripId or organizerId must be specified
+  reviews(tripId: "ck8j1q2jw0000bq5v4q1q2jw0", first: 20) {
+    totalCount
+    edges {
+      cursor
+      node {
+        ...ReviewData
+      }
+    }
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+
+query Review {
+  review(id: "ck8j1q2jw0000bq5v4q1q2jw0") {
+    ...ReviewData
+  }
+}
+
+# mutation DeleteReview {
+#   removeReview(id: "ck8j1q2jw0000bq5v4q1q2jw0") {
+#     ...ReviewData
+#   }
+# }
+
+fragment ReviewData on Review {
+  id
+  createdAt
+  updatedAt
+  author {
+    ...UserData
+  }
+  organizer {
+    ...UserData
+  }
+  trip {
+    ...TripData
+  }
+}
+
+fragment TripData on Trip {
+  id
+  createdAt
+  updatedAt
+  organizer {
+    ...UserData
+  }
+  destination
+  startDate
+  endDate
+  cost
+  maxParticipants
+  currentParticipants
+  itinerary
+}
+
+fragment UserData on User {
+  id
+  email
+  firstname
+  lastname
+  role
+}

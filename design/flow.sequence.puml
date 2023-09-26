@@ -1,0 +1,77 @@
+@startuml
+actor organizer #red
+actor user #blue
+participant tripAPI #LightCyan
+participant db #LightGoldenRodYellow
+autonumber "<b>[00]"
+
+group #salmon create trip 
+  organizer->tripAPI: Submit new trip
+  tripAPI->db: Save Trip
+  db->tripAPI
+  tripAPI->organizer: created
+end
+
+group #salmon Publish trip
+  organizer->tripAPI: publish trip
+  tripAPI->db: set trip to published
+  db->tripAPI
+  tripAPI->organizer: published
+end
+
+group #salmon get list of trips
+  user->tripAPI: get trips
+  tripAPI->db: get trips
+  db->tripAPI
+  tripAPI->user: trips
+end
+
+group #salmon get trip by id
+  user->tripAPI: get trip
+  tripAPI->db: get trip
+  db->tripAPI
+  tripAPI->user: trip
+end
+
+group #salmon messaging
+  loop [messaging]
+    user<->tripAPI: message to organizer
+    tripAPI<->db: get/save messages
+    organizer<->tripAPI: message to user
+  end
+end
+
+
+group #salmon Request booking
+  user->tripAPI: request booking
+  tripAPI->db: save booking
+  db->tripAPI
+  tripAPI->user: created
+end
+
+group #salmon Organizer-get bookings for trip
+  organizer->tripAPI: get bookings for trip
+  tripAPI->db: get bookings
+  db->tripAPI
+  tripAPI->organizer: bookings
+end
+
+group #salmon show booking request
+  organizer->tripAPI: preview booking request
+  tripAPI->db: get booking
+  db->tripAPI
+  tripAPI->organizer: booking
+end
+
+group #salmon accept booking request
+  organizer->tripAPI: accept booking request
+  tripAPI->db: set booking to accepted
+  db->tripAPI
+  tripAPI->organizer: accepted
+end
+
+group #salmon notify user by email
+  tripAPI->user: notify by email, payment
+end
+
+@enduml

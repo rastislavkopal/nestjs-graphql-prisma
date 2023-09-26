@@ -9,6 +9,7 @@ import { TripConnection } from './models/trip-connetion.model';
 import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection';
 import { TripOrder } from './dto/trip-order.input';
 import { NullableType } from '../common/types/nullable.type';
+import { ForbiddenError } from '@nestjs/apollo';
 
 @Injectable()
 export class TripsService {
@@ -18,6 +19,7 @@ export class TripsService {
       data: {
         organizerId: loggedUser.id,
         currentParticipants: 0,
+        isPublished: false,
         ...createTripInput,
       },
       include: { organizer: true },
@@ -36,6 +38,7 @@ export class TripsService {
           include: { organizer: true },
           where: {
             destination: { contains: query || '' },
+            endDate: { gte: new Date() }, // only future trips
           },
           orderBy: orderBy ? { [orderBy.field]: orderBy.direction } : undefined,
           ...args,
@@ -61,10 +64,14 @@ export class TripsService {
   async update(
     id: string,
     updateTripInput: UpdateTripInput,
+    loggedUser: User,
   ): Promise<NullableType<Trip>> {
     const trip = await this.prisma.trip.findUnique({
       where: { id },
     });
+
+    if (trip.organizerId !== loggedUser.id)
+      throw new ForbiddenError('Forbidden');
 
     if (!trip) return null;
 
@@ -75,12 +82,15 @@ export class TripsService {
     });
   }
 
-  async remove(id: string): Promise<NullableType<Trip>> {
+  async remove(id: string, loggedUser: User): Promise<NullableType<Trip>> {
     const trip = await this.prisma.trip.findUnique({
       where: { id },
     });
 
     if (!trip) return null;
+
+    if (trip.organizerId !== loggedUser.id)
+      throw new ForbiddenError('Forbidden');
 
     return this.prisma.trip.delete({
       where: { id },

@@ -16,6 +16,8 @@ Table User {
   receivedMessages Message [not null]
   trips Trip [not null]
   bookings Booking [not null]
+  sentReview Review [not null]
+  receiverReview Review [not null]
 }
 
 Table Post {
@@ -53,18 +55,35 @@ Table Trip {
   maxParticipants Int [not null]
   currentParticipants Int [not null]
   itinerary String [not null]
+  title String [not null]
+  isPublished Boolean [not null, default: false]
   bookings Booking [not null]
+  Review Review [not null]
 }
 
 Table Booking {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  isApproved Boolean [not null, default: false]
+  status BookingStatus [not null, default: 'OPEN']
   user User [not null]
   userId String [not null]
   trip Trip [not null]
   tripId String [not null]
+}
+
+Table Review {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  rating Int [not null]
+  message String [not null]
+  author User [not null]
+  authorId String [not null]
+  organizer User
+  organizerId String
+  trip Trip
+  tripId String
 }
 
 Enum Role {
@@ -72,6 +91,13 @@ Enum Role {
   USER
   ORGANIZER
   GUIDE
+}
+
+Enum BookingStatus {
+  OPEN
+  ACCEPTED
+  REJECTED
+  CANCELLED
 }
 
 Ref: Post.authorId > User.id
@@ -85,3 +111,9 @@ Ref: Trip.organizerId > User.id
 Ref: Booking.userId > User.id [delete: Cascade]
 
 Ref: Booking.tripId > Trip.id [delete: Cascade]
+
+Ref: Review.authorId > User.id [delete: Cascade]
+
+Ref: Review.organizerId > User.id [delete: Cascade]
+
+Ref: Review.tripId > Trip.id [delete: Cascade]

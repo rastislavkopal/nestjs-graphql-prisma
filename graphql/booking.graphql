@@ -12,7 +12,6 @@ mutation UpdateBooking {
 
 query BookingConnection {
   bookings(
-    # if tripId is not provided, it will return all bookings for logged in user
     tripId: "ck8j1q2jw0000bq5v4q1q2jw0"
     first: 20
     orderBy: { field: createdAt, direction: desc }
@@ -33,8 +32,32 @@ query BookingConnection {
   }
 }
 
+query MyBookingsConnection {
+  myBookings(first: 20, orderBy: { field: createdAt, direction: desc }) {
+    totalCount
+    edges {
+      cursor
+      node {
+        ...BookingData
+      }
+    }
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+
 query Booking {
   booking(id: "ck8j1q2jw0000bq5v4q1q2jw0") {
+    ...BookingData
+  }
+}
+
+mutation AcceptBooking {
+  acceptBooking(id: "ck8j1q2jw0000bq5v4q1q2jw0") {
     ...BookingData
   }
 }

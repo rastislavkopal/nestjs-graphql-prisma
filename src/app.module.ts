@@ -14,6 +14,7 @@ import { GqlConfigService } from './gql-config.service';
 import { MessagesModule } from './messages/messages.module';
 import { TripsModule } from './trips/trips.module';
 import { BookingsModule } from './bookings/bookings.module';
+import { ReviewsModule } from './reviews/reviews.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { BookingsModule } from './bookings/bookings.module';
     MessagesModule,
     TripsModule,
     BookingsModule,
+    ReviewsModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

@@ -24,19 +24,34 @@ export class BookingsResolver {
     return this.bookingsService.create(createBookingInput, loggedUser);
   }
 
+  // TODO add organizer guard
   @Query(() => BookingConnection, { name: 'bookings' })
   findAllBookings(
     @LoggedUser() loggedUser: User,
     @Args() paginationArgs: PaginationArgs,
     @Args({ name: 'orderBy', type: () => BookingOrder })
     orderBy: BookingOrder,
-    @Args('tripId', { nullable: true }) tripId?: string,
+    @Args('tripId') tripId: string,
   ): Promise<BookingConnection> {
-    return this.bookingsService.findAll(
+    return this.bookingsService.findTripBookings(
+      loggedUser,
+      paginationArgs,
+      tripId,
+      orderBy,
+    );
+  }
+
+  @Query(() => BookingConnection, { name: 'myBookings' })
+  findMyBookings(
+    @LoggedUser() loggedUser: User,
+    @Args() paginationArgs: PaginationArgs,
+    @Args({ name: 'orderBy', type: () => BookingOrder })
+    orderBy: BookingOrder,
+  ): Promise<BookingConnection> {
+    return this.bookingsService.findMyBookings(
       loggedUser,
       paginationArgs,
       orderBy,
-      tripId,
     );
   }
 
@@ -51,6 +66,11 @@ export class BookingsResolver {
     @Args('data') updateBookingInput: UpdateBookingInput,
   ) {
     return this.bookingsService.update(id, updateBookingInput);
+  }
+
+  @Mutation(() => Booking, { name: 'acceptBooking' })
+  acceptBooking(@Args('id') id: string, @LoggedUser() loggedUser: User) {
+    return this.bookingsService.accept(id, loggedUser);
   }
 
   @Mutation(() => Booking)

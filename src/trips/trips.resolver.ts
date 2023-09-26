@@ -44,12 +44,16 @@ export class TripsResolver {
   updateTrip(
     @Args('id', { type: () => String }) id: string,
     @Args('data') updateTripInput: UpdateTripInput,
+    @LoggedUser() user: User,
   ) {
-    return this.tripsService.update(id, updateTripInput);
+    return this.tripsService.update(id, updateTripInput, user);
   }
 
   @Mutation(() => Trip, { nullable: true })
-  deleteTrip(@Args('id', { type: () => String }) id: string) {
-    return this.tripsService.remove(id);
+  deleteTrip(
+    @Args('id', { type: () => String }) id: string,
+    @LoggedUser() user: User,
+  ) {
+    return this.tripsService.remove(id, user);
   }
 }
